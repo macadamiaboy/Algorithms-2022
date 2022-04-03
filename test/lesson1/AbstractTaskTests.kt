@@ -1,5 +1,6 @@
 package lesson1
 
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import util.PerfResult
 import util.estimate
@@ -51,6 +52,10 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            sortTimes("input/time_custom1.txt", "temp.txt")
+        }
+        File("temp.txt").delete()
     }
 
     protected fun sortAddresses(sortAddresses: (String, String) -> Unit) {
@@ -130,6 +135,26 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        try {
+            sortTemperatures("input/temp_in2.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                    -12.6
+                    -12.6
+                    -12.6
+                    12.6
+                    12.6
+                    12.6
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            sortTimes("input/temp_in3.txt", "temp.txt")
+        }
+        File("temp.txt").delete()
         try {
             sortTemperatures("input/empty.txt", "temp.txt")
             assertFileContent("temp.txt", "")
@@ -290,6 +315,23 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                         41
                         32
                         32
+                    """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortSequence("input/seq_in6.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                        2
+                        3
+                        4
+                        5
+                        6
+                        7
+                        1
                     """.trimIndent()
             )
         } finally {

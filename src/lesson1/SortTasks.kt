@@ -2,6 +2,8 @@
 
 package lesson1
 
+import java.io.File
+
 /**
  * Сортировка времён
  *
@@ -32,8 +34,31 @@ package lesson1
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+//Трудоемкость O(n^2)
+//Ресурсоемкость O(n)
 fun sortTimes(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val limiter = Regex("""(\d\d):(\d\d):(\d\d)\s[PA]M""")
+    val map = mutableListOf<Pair<Int, String>>()
+    for (line in File(inputName).readLines()) {
+        if (!(line.matches(limiter))) throw IllegalArgumentException()
+        val firstSplitting = line.split(" ")
+        val secondSplitting = firstSplitting[0].split(":")
+        var value = 0
+        for (part in secondSplitting) {
+            val number = part.toInt()
+            value = value * 60 + number
+        }
+        if (secondSplitting[0] == "12") value -= 43200
+        if (firstSplitting[1] == "PM") value += 43200
+        map.add(Pair(value, line))
+    }
+    val sorted = map.sortedBy { it.first }
+    for (i in sorted) {
+        writer.write(i.second)
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -96,8 +121,22 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
+//Трудоемкость O(n^2)
+//Ресурсоемкость O(n)
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val limiter = Regex("""-?(\d)+\.\d""")
+    val list = mutableListOf<Double>()
+    for (line in File(inputName).readLines()) {
+        if (!(line.matches(limiter))) throw IllegalArgumentException()
+        list += line.toDouble()
+    }
+    list.sort()
+    for (item in list) {
+        writer.write(item.toString())
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -129,8 +168,28 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  */
+//Трудоемкость O(n^2)
+//Ресурсоемкость O(n)
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val limiter = Regex("""(\d)+""")
+    val list = File(inputName).readLines().filter { it.matches(limiter) }.map { it.trim().toInt() }.toMutableList()
+    val frequency = list.groupBy { it }.map { it.key to it.value.size }.sortedByDescending { it.first }
+    var max = 0
+    var theMostFrequent: Int? = null
+    for (item in frequency) {
+        if (item.second >= max) {
+            max = item.second
+            theMostFrequent = item.first
+        }
+    }
+    val cleared = list.filter { it != theMostFrequent }.toMutableList()
+    cleared += list.filter { it == theMostFrequent }
+    for (item in cleared) {
+        writer.write(item.toString())
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
