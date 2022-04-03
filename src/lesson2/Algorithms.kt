@@ -2,6 +2,9 @@
 
 package lesson2
 
+import java.io.File
+import kotlin.math.sqrt
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -26,8 +29,26 @@ package lesson2
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+//Трудоемкость O(n^2)
+//Ресурсоемкость O(n)
 fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
-    TODO()
+    val limiter = Regex("""\d+""")
+    val list = mutableListOf<Int>()
+    var currentProfit = 0
+    var result: Pair<Int, Int> = 0 to 0
+    for (line in File(inputName).readLines()) {
+        if (!(line.matches(limiter))) throw IllegalArgumentException()
+        list += line.toInt()
+    }
+    for (i in list.indices) {
+        for (j in i until list.size) {
+            if (list[j] - list[i] > currentProfit) {
+                result = i + 1 to j + 1
+                currentProfit = list[j] - list[i]
+            }
+        }
+    }
+    return result
 }
 
 /**
@@ -95,7 +116,23 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * вернуть ту из них, которая встречается раньше в строке first.
  */
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    val table: Array<Array<Int>> = Array(first.length + 1) { Array(second.length + 1) { 0 } }
+    var maxLength = 0
+    var marker = 0
+    table[0][0] = 0
+    for (i in first.indices) {
+        for (j in second.indices) {
+            if (first[i] == second[j]) {
+                val intermediate = table[i][j] + 1
+                table[i + 1][j + 1] = intermediate
+                if (intermediate > maxLength) {
+                    maxLength = intermediate
+                    marker = i + 1
+                }
+            }
+        }
+    }
+    return first.substring(marker - maxLength, marker)
 }
 
 /**
@@ -109,5 +146,31 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Единица простым числом не считается.
  */
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    if (limit <= 1) return 0
+    val list = Array(limit - 1) { it + 2 }
+    if (limit <= 3) return list.size
+    else {
+        for (i in 0..sqrt(limit.toDouble()).toInt()) {
+            if (list[i] != 0) {
+                for (j in i + 1 until list.size) if (list[j] % list[i] == 0) list[j] = 0
+            }
+        }
+    }
+    return list.filter { it != 0 }.size
+}
+
+fun main() {
+    val limit = 4
+    val list = Array(limit - 1) { it + 2 }
+    if (limit <= 3) println("Break")
+    else {
+        for (i in 0..sqrt(list.size.toDouble()).toInt()) {
+            if (list[i] != 0) {
+                for (j in i + 1 until limit - 1) if (list[j] % list[i] == 0) list[j] = 0
+            }
+        }
+    }
+    val result = list.filter { it != 0 }
+    for (i in result) println(i)
+    println(result.size)
 }
